@@ -1,7 +1,69 @@
 ---
-title: "NYC Census Tracts"
+author: "Faisal Jan"
+execute: 
+  echo: false
 ---
 
-This is a Quarto website.
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+```
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+```{r}
+nyc_data <- read_csv("data/nyc_tracts.csv", show_col_types = FALSE)
+```
+
+```{r}
+nyc_data_cleaned <- nyc_data |>
+  filter(!is.na(med_income)) |>
+  mutate(
+    county = str_extract(tract, "(?<=; ).*?(?= County;)"),
+    # Clean up the extracted county names (e.g., remove " County")
+    county = case_when(
+      county == "Kings" ~ "Brooklyn",
+      county == "New York" ~ "Manhattan",
+      county == "Richmond" ~ "Staten Island",
+      TRUE ~ county # Keep others as they are (Bronx, Queens)
+    )
+  ) |>
+  # Convert race and county to factors for better plotting control
+  mutate(
+    race = as.factor(race),
+    county = as.factor(county)
+  )
+```
+
+```{r}
+# Calculate the average median income for each race within each county
+average_income_by_race_county <- nyc_data_cleaned |>
+  group_by(county, race) |>
+  summarise(
+    avg_med_income = mean(med_income, na.rm = TRUE),
+    .groups = "drop" # Drop grouping after summarizing
+  ) |>
+  # Order the bars by average income within each county (optional)
+  group_by(county) |> # Group again to order within each facet
+  arrange(avg_med_income) |> # Arrange by income (ascending)
+  ungroup() |> # Ungroup before creating the factor, so levels are consistent across facets if desired
+  mutate(race = factor(race, levels = unique(race))) # Reorder factor levels based on current sort
+
+ggplot(average_income_by_race_county, aes(x = race, y = avg_med_income, fill = race)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::dollar) + # Format y-axis as currency
+  facet_wrap(~ county, scales = "free_x", ncol = 2) + # Facet by county
+  labs(
+    title = "Median Household Income by Race in NYC Counties",
+    subtitle = "White bar consistently higher than the Black or Hispanic bars in all counties",
+    x = "Predominant Racial Group",
+    y = "Average Median Household Income",
+    caption = "Data: NYC Census Tracts (example data). NA values for income removed."
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis labels
+    legend.position = "none"
+  )
+```
+
+The bar plot, faceted by county, provides a granular view of average median household income disparities among predominant racial groups across New York City. It reveals that income levels for racial groups are not uniform across the boroughs. While certain racial groups may show higher average incomes consistently in some counties (e.g., White populations in Manhattan or Staten Island often appearing wealthier on average), the magnitude and ranking of income between groups can vary significantly from one county to another. This visualization is particularly useful for identifying specific boroughs where income gaps between racial groups are more pronounced, or conversely, areas where the distribution of average median income appears more equitable. However, it's important to remember that these are averages derived from census tract data, and while they highlight general trends and disparities, they do not capture the full range of income distribution within each group or account for the complex socioeconomic factors at play beyond a predominant racial classification.

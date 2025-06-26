@@ -2,4 +2,4 @@
 title: "About"
 ---
 
-About this site
+This project is built with ❤️ by Faisal Jan. Oh yes, thank you my Preceptor for the amazing course!
