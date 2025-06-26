@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Income and Race Analysis of NYC",
+    "section": "",
+    "text": "The bar plot, faceted by county, provides a granular view of average median household income disparities among predominant racial groups across New York City. It reveals that income levels for racial groups are not uniform across the boroughs. While certain racial groups may show higher average incomes consistently in some counties (e.g., White populations in Manhattan or Staten Island often appearing wealthier on average), the magnitude and ranking of income between groups can vary significantly from one county to another. This visualization is particularly useful for identifying specific boroughs where income gaps between racial groups are more pronounced, or conversely, areas where the distribution of average median income appears more equitable. However, it’s important to remember that these are averages derived from census tract data, and while they highlight general trends and disparities, they do not capture the full range of income distribution within each group or account for the complex socioeconomic factors at play beyond a predominant racial classification."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This project is built with ❤️ by Faisal Jan. Oh yes, thank you my Preceptor for the amazing course!"
+  }
+]
